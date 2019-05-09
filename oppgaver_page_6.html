@@ -64,7 +64,6 @@ var VarQuestion8 = new Variable( 'VarQuestion8', '', 0, 0, '', 365, 'barekraftig
 var VarQuestion10 = new Variable( 'VarQuestion10', '', 0, 0, '', 365, 'barekraftigmatforbruk.html', f );
 var VarQuestion11 = new Variable( 'VarQuestion11', '', 0, 0, '', 365, 'barekraftigmatforbruk.html', f );
 var VarQuestion_12 = new Variable( 'VarQuestion_12', '', 0, 0, null, null, 'barekraftigmatforbruk.html', f );
-var VarQuestion_13 = new Variable( 'VarQuestion_13', '', 0, 0, '', 365, 'barekraftigmatforbruk.html', f );
 var VarTriQA_1146 = new Variable( 'VarTriQA_1146', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
 var VarTriQA_1128 = new Variable( 'VarTriQA_1128', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
 var VarTriQA_1205 = new Variable( 'VarTriQA_1205', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
@@ -73,11 +72,12 @@ var VarTriQA_1228 = new Variable( 'VarTriQA_1228', '0', 0, 0, '', 365, 'barekraf
 var VarTriQA_1244 = new Variable( 'VarTriQA_1244', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
 var VarTriQA_1267 = new Variable( 'VarTriQA_1267', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
 var VarTriQA_1318 = new Variable( 'VarTriQA_1318', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
-var VarTriQA_1386 = new Variable( 'VarTriQA_1386', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
 var VarTriQA_1344 = new Variable( 'VarTriQA_1344', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
 var VarQuestion_9 = new Variable( 'VarQuestion_9', '', 0, 0, '', 365, 'barekraftigmatforbruk.html', f );
 var VarTriQA_1793 = new Variable( 'VarTriQA_1793', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
 var VarTriMuteAllFLV = new Variable( 'VarTriMuteAllFLV', '', 0, 0, null, null, 'barekraftigmatforbruk.html'  );
+var VarQuestion_3523 = new Variable( 'VarQuestion_3523', '', 0, 0, '', 365, 'barekraftigmatforbruk.html', f );
+var VarTriQA_3523 = new Variable( 'VarTriQA_3523', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
 var bRcdTitle = true;
 var pgWidth_phonePort = 480;
 var pgWidth_phoneLand = 785;
@@ -150,9 +150,9 @@ qu1318.resetQuestion();
   VarTriQA_1344.reset();
   VarQuestion11.set( '' );
   VarQuestion_12.set( '' );
-  VarTriQA_1386.reset();
-  VarQuestion_13.set( '' );
 qu1793.resetQuestion();
+  VarTriQA_3523.reset();
+  VarQuestion_3523.set( '' );
 
   if ( trivPageTracking.getRangeStatus(982) != 'notstarted' ) {      trivPageTracking.setRangeStatus(982,0);
       trivPageTracking.updateIndicators();
