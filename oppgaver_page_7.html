@@ -21,6 +21,7 @@
 <script type='text/javascript' src='trivantis.js'></script>
 <script type='text/javascript' src='trivantis-cookie.js'></script>
 <script type='text/javascript' src='trivantis-timedate.js'></script>
+<script type='text/javascript' src='trivantis-titlemgr.js'></script>
 <script type='text/javascript' src='trivantis-wndobj.js'></script>
 <script type='text/javascript' src='trivantis-questions.js'></script>
 <script type='text/javascript' src='trivantis-dialog.js'></script>
@@ -75,9 +76,8 @@ var VarTriQA_1318 = new Variable( 'VarTriQA_1318', '0', 0, 0, '', 365, 'barekraf
 var VarTriQA_1344 = new Variable( 'VarTriQA_1344', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
 var VarQuestion_9 = new Variable( 'VarQuestion_9', '', 0, 0, '', 365, 'barekraftigmatforbruk.html', f );
 var VarTriQA_1793 = new Variable( 'VarTriQA_1793', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
+var AICC_Score = new Variable( 'AICC_Score', '0', 0, 0, null, null, 'barekraftigmatforbruk.html', f );
 var VarTriMuteAllFLV = new Variable( 'VarTriMuteAllFLV', '', 0, 0, null, null, 'barekraftigmatforbruk.html'  );
-var VarQuestion_3523 = new Variable( 'VarQuestion_3523', '', 0, 0, '', 365, 'barekraftigmatforbruk.html', f );
-var VarTriQA_3523 = new Variable( 'VarTriQA_3523', '0', 0, 0, '', 365, 'barekraftigmatforbruk.html', t );
 var bRcdTitle = true;
 var pgWidth_phonePort = 480;
 var pgWidth_phoneLand = 785;
@@ -104,7 +104,14 @@ viewOverrideMap["TabletPortrait"] = "Desktop";
 function init_page()
 {
 	if( is.min ){
-			trivCenterPage = true;
+			var titleMgr = getTitleMgrHandle()
+		if( titleMgr ) {
+		  if( !titleMgr.loadTest( '_tobj982', 'test982', 'oppgaver_page_7.html' )) {
+		    var gotoPage = titleMgr.cancelTest( 'test982' )
+		    if( gotoPage ) trivExitPage( gotoPage, false )
+		  }
+		}
+		trivCenterPage = true;
 		if(!isMobile.any()) trivCenter();
 		window.trivBgndAudio = new jsBgSound();
 		trivBgndAudio.attach(false);
@@ -118,12 +125,72 @@ function init_page()
 		trivPage.actionMute();
 	}
 }
+bDoProcessTest = false;
+trivProcessTest=1;
 function trivPrevPage() {
     trivExitPage( 'oppgaver_page_6.html', true )
 }
 
 function trivNextPage() {
-    trivExitPage( 'oppgaver_page_8.html', true )
+    trivExitPage( 'oppgaver_last_test_page.html', true )
+}
+
+function finishTest( score ) {
+  var titleMgr = getTitleMgrHandle();
+  if( titleMgr ) {
+    var gotoPage = titleMgr.getProcessTestResult( 'test982' );
+    if( gotoPage || gotoPage === '') {
+      if( score ) afterProcessTest( score, 'Oppgaver_Score' );
+      setTimeout(function(){trivExitPage( gotoPage, false );},1000);
+    }
+    else if( !gotoPage && gotoPage != '' ) {
+      setTimeout( "finishTest()", 1000 );
+    }
+  }
+}
+
+var processTestStarted = false;
+
+function processTest(bCheck) {
+	if ( processTestStarted ) return;
+	try {
+		processTestStarted = true;
+		if( bCheck )
+		{
+			if( trivCheckQuestions( null, true ) == 'return' )
+				return;
+			if( trivActFBCnt != 0 )
+			{
+				bDoProcessTest = true;
+				setTimeout( "checkLeavePage()", 100 )
+				return;
+			}
+		}
+		var titleMgr = getTitleMgrHandle();
+		if( titleMgr ) {
+			if( VarQuestion_1.f > 0 ) VarQuestion_1.uDT(); else VarQuestion_1.getValue();
+			if( VarQuestion_2.f > 0 ) VarQuestion_2.uDT(); else VarQuestion_2.getValue();
+			if( VarQuestion_3.f > 0 ) VarQuestion_3.uDT(); else VarQuestion_3.getValue();
+			if( VarQuestion_4.f > 0 ) VarQuestion_4.uDT(); else VarQuestion_4.getValue();
+			if( VarQuestion5.f > 0 ) VarQuestion5.uDT(); else VarQuestion5.getValue();
+			if( VarQuestion_6.f > 0 ) VarQuestion_6.uDT(); else VarQuestion_6.getValue();
+			if( VarQuestion7.f > 0 ) VarQuestion7.uDT(); else VarQuestion7.getValue();
+			if( VarQuestion8.f > 0 ) VarQuestion8.uDT(); else VarQuestion8.getValue();
+			if( VarQuestion10.f > 0 ) VarQuestion10.uDT(); else VarQuestion10.getValue();
+			if( VarQuestion11.f > 0 ) VarQuestion11.uDT(); else VarQuestion11.getValue();
+			if( VarQuestion_12.f > 0 ) VarQuestion_12.uDT(); else VarQuestion_12.getValue();
+			if( VarQuestion_9.f > 0 ) VarQuestion_9.uDT(); else VarQuestion_9.getValue();
+			Oppgaver_Score.set( titleMgr.GetTestScore( 'test982' ));
+			var score = parseInt( Oppgaver_Score.getValue() );
+			titleMgr.processTest( 'test982' );
+			if ( titleMgr.GetIfTestPassed( 'test982' ) ) {
+				trivPageTracking.setRangeStatus(982, 2)
+				trivPageTracking.updateIndicators();
+			}
+			finishTest( score );
+		}
+	}
+	finally { processTestStarted = false; }
 }
 
 function ResetTest_test982() {
@@ -150,8 +217,10 @@ qu1344.resetQuestion();
 qu1360.resetQuestion();
   VarTriQA_1793.reset();
   VarQuestion_9.set( '' );
-  VarTriQA_3523.reset();
-  VarQuestion_3523.set( '' );
+  var titleMgr = getTitleMgrHandle();
+  if( titleMgr ) {
+    titleMgr.ResetTest( 'test982' );
+  }
 
   if ( trivPageTracking.getRangeStatus(982) != 'notstarted' ) {      trivPageTracking.setRangeStatus(982,0);
       trivPageTracking.updateIndicators();
@@ -162,7 +231,6 @@ qu1360.resetQuestion();
 if( is.min ) {
 	var rcdObj = { rcdData: {} };
 
-	var textbutton48 = new jsWndTextButton(); //BtnPilH
 	var textbutton36 = new jsWndTextButton(); //BtnHjem
 	var shape1697 = new jsWndShape(); //MsgQ13Wr
 	var shape1696 = new jsWndShape(); //MsgQ13Cor
@@ -197,6 +265,7 @@ if( is.min ) {
 	var textbutton1045 = new jsWndTextButton(); //BtnYes
 	var textbutton1039 = new jsWndTextButton(); //BtnOmstart
 	var textbutton1032 = new jsWndTextButton(); //BtnAvslutt
+	var textbutton3605 = new jsWndTextButton(); //BtnFerdig
 	var text3248 = new jsWndText(); //TxtSide
 	var shape1336 = new jsWndShape(); //Rectangle
 	var qu1360 = new jsWndMultiChoiceQuestion(); //Oppgave12
@@ -262,8 +331,8 @@ if( is.min ) {
 		];
 	var alertCtr = 0;
 	var trivPageId=1335; //trivPage.id
-	var arWnds = [text3248,shape1336,text1365,text1366,radio1367,text1368,radio1369,text1370,radio1371,text1372,radio1373,text1349,text1350,radio1351,text1352,radio1353,text1354,radio1355,text1340,text1356,textbutton48,textbutton36,shape1697,shape1696,shape1688,shape1692,shape1684,shape1683,shape1667,shape1666,shape1661,shape1662,shape1647,shape1646,shape1627,shape1626,shape1622,shape1618,shape1595,shape1596,shape1581,shape1600,shape1549,shape1548,shape1106,shape1105,shape1530,shape1529,shape1041,text1038,textbutton1050,textbutton1045,textbutton1039,textbutton1032];
-	var arAttachObj = [textbutton48,textbutton36,shape1697,shape1696,shape1688,shape1692,shape1684,shape1683,shape1667,shape1666,shape1661,shape1662,shape1647,shape1646,shape1627,shape1626,shape1622,shape1618,shape1595,shape1596,shape1581,shape1600,shape1549,shape1548,shape1106,shape1105,shape1530,shape1529,og1055,shape1041,text1038,textbutton1050,textbutton1045,textbutton1039,textbutton1032,text3248,shape1336,qu1360,text1365,text1366,radio1367,text1368,radio1369,text1370,radio1371,text1372,radio1373,qu1344,text1349,text1350,radio1351,text1352,radio1353,text1354,radio1355,text1340,text1356];
+	var arWnds = [text3248,shape1336,text1365,text1366,radio1367,text1368,radio1369,text1370,radio1371,text1372,radio1373,text1349,text1350,radio1351,text1352,radio1353,text1354,radio1355,text1340,text1356,textbutton36,shape1697,shape1696,shape1688,shape1692,shape1684,shape1683,shape1667,shape1666,shape1661,shape1662,shape1647,shape1646,shape1627,shape1626,shape1622,shape1618,shape1595,shape1596,shape1581,shape1600,shape1549,shape1548,shape1106,shape1105,shape1530,shape1529,shape1041,text1038,textbutton1050,textbutton1045,textbutton1039,textbutton1032,textbutton3605];
+	var arAttachObj = [textbutton36,shape1697,shape1696,shape1688,shape1692,shape1684,shape1683,shape1667,shape1666,shape1661,shape1662,shape1647,shape1646,shape1627,shape1626,shape1622,shape1618,shape1595,shape1596,shape1581,shape1600,shape1549,shape1548,shape1106,shape1105,shape1530,shape1529,og1055,shape1041,text1038,textbutton1050,textbutton1045,textbutton1039,textbutton1032,textbutton3605,text3248,shape1336,qu1360,text1365,text1366,radio1367,text1368,radio1369,text1370,radio1371,text1372,radio1373,qu1344,text1349,text1350,radio1351,text1352,radio1353,text1354,radio1355,text1340,text1356];
 	var arPooledMedia = [];
 	var arQuest = [qu1360,qu1344];
 }
